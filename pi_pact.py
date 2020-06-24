@@ -91,7 +91,7 @@ INTERVAL_LIMITS = [20, 10000]  # (ms)
 ALLOWABLE_FILTERS = ID_FILTERS + MEASUREMENT_FILTERS
 
 
-# noinspection PyAttributeOutsideInit
+# noinspection PyAttributeOutsideInit,PyTypeChecker
 class Advertiser(object):
     """Instantiates a BLE beacon advertiser.
     
@@ -165,7 +165,7 @@ class Advertiser(object):
     @property
     def timeout(self):
         """BLE beacon advertiser timeout getter."""
-        return self.__timeout;
+        return self.__timeout
 
     @timeout.setter
     def timeout(self, value: Union[float, int]):
@@ -193,7 +193,7 @@ class Advertiser(object):
     @property
     def uuid(self):
         """BLE beacon advertiser UUID getter."""
-        return self.__uuid;
+        return self.__uuid
 
     @uuid.setter
     def uuid(self, value: str):
@@ -208,7 +208,7 @@ class Advertiser(object):
             self.__uuid = str(uuid1())
             self.__logger.debug(f"Beacon advertiser UUID set to {self.__uuid}")
         else:
-            self.__uuid = value;
+            self.__uuid = value
 
     @property
     def major(self):
@@ -333,6 +333,7 @@ class Advertiser(object):
             f.write("0")
 
 
+# noinspection PyAttributeOutsideInit
 class Scanner(object):
     """Instantiates a BLE beacon scanner.
     
@@ -415,7 +416,7 @@ class Scanner(object):
     @property
     def timeout(self):
         """BLE beacon scanner timeout getter."""
-        return self.__timeout;
+        return self.__timeout
 
     @timeout.setter
     def timeout(self, value):

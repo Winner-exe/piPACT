@@ -592,8 +592,6 @@ class Scanner(object):
         # Process, filter, and output received scans
         advertisements = self.process_scans(scans, timestamps)
         advertisements = self.filter_advertisements(advertisements)
-        print(scan_file)
-        print(advertisements)
         advertisements.to_csv(scan_file, index_label='SCAN')  # TODO examine possible bug here
         return advertisements
 

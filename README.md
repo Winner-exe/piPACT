@@ -37,7 +37,7 @@ usage: pi_pact.py [-h] (-a | -s) [--config_yml CONFIG_YML]
                   [--control_file CONTROL_FILE] [--scan_prefix SCAN_PREFIX]
                   [--timeout TIMEOUT] [--uuid UUID] [--major MAJOR]
                   [--minor MINOR] [--tx_power TX_POWER] [--interval INTERVAL]
-                  [--revist REVIST]
+                  [--revist REVIST] [--distance DISTANCE]
 
 BLE beacon advertiser or scanner. Command line arguments will override their
 corresponding value in a configuration file if specified.

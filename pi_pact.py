@@ -617,6 +617,8 @@ class Scanner(object):
 
 def setup_logger(config: dict) -> logging.Logger:
     """Setup and return logger based on configuration."""
+    log_file: Path = Path(LOG_NAME).resolve()
+    log_file.chmod(0o777)
     logging.config.dictConfig(config['config'])
     return logging.getLogger(config['name'])
 

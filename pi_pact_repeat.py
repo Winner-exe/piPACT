@@ -70,13 +70,14 @@ def load_config(parsed_args: Dict[str, str]) -> Dict[str, str]:
         Configuration dictionary.
     """
     config = dict()
-    config['--distance'] = parsed_args['--distance']
+    config['--distance'] = parsed_args.get('--distance')
+    print(parsed_args.get('--distance'))
 
     for arg in OPTIONAL_ARGS:
         if parsed_args[arg]:
-            config[arg] = parsed_args[arg]
+            config[arg] = parsed_args.get(arg)
         else:
-            config[arg] = DEFAULT_ARGS[arg]
+            config[arg] = DEFAULT_ARGS.get(arg)
 
     return config
 
@@ -92,32 +93,32 @@ def main(args: List[str]):
     """
     parsed_args: dict = parse_args(args)
     config: dict = load_config(parsed_args)
-    distance: float = config['--distance']
+    distance: float = config.get('--distance')
     arg_list: List[str] = args
     arg_list[args.index('--distance') + 1] = str(distance)
 
     if parsed_args['-dfinal']:
-        if (distance - parsed_args['-dfinal']) / config['-dinc'] < 0:
-            while (distance - parsed_args['-dfinal']) / config['-dinc'] < 0:
+        if (distance - parsed_args.get('-dfinal')) / config.get('-dinc') < 0:
+            while (distance - parsed_args.get('-dfinal')) / config.get('-dinc') < 0:
                 pi_pact.main(arg_list)
-                distance -= config['-dinc']
+                distance -= config.get('-dinc')
                 arg_list[args.index('--distance') + 1] = str(distance)
-                time.sleep(config['-wint'])
+                time.sleep(config.get('-wint'))
         else:
             raise ValueError("Distance increment must allow final distance to be reached.")
-    elif parsed_args['-tfinal']:
+    elif parsed_args.get('-tfinal'):
         start_time: float = time.monotonic()
-        while (time.monotonic() - start_time) < parsed_args['-dfinal']:
+        while (time.monotonic() - start_time) < parsed_args.get('-dfinal'):
             pi_pact.main(arg_list)
-            distance -= config['-dinc']
+            distance -= config.get('-dinc')
             arg_list[args.index('--distance') + 1] = str(distance)
-            time.sleep(config['-wint'])
+            time.sleep(config.get('-wint'))
     else:
-        for i in range(parsed_args['-niter']):
+        for i in range(parsed_args.get('-niter')):
             pi_pact.main(arg_list)
-            distance -= config['-dinc']
+            distance -= config.get('-dinc')
             arg_list[args.index('--distance') + 1] = str(distance)
-            time.sleep(config['-wint'])
+            time.sleep(config.get('-wint'))
 
 
 if __name__ == '__main__':

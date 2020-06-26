@@ -23,8 +23,8 @@ def parse_args(args: List[str]) -> Dict[str, str]:
                         help='The change in distance between runs (m).')
     parser.add_argument('--distance', type=float, required=True,
                         help="Initial pre-measured distance between the devices (m).")
-    parser.add_argument('--timeout', type=float, required=True
-    help = "Timeout (s) for both beacon advertiser and  scanner modes.")
+    parser.add_argument('--timeout', type=float, required=True,
+                        help="Timeout (s) for both beacon advertiser and  scanner modes.")
     parser.add_argument('-wint', '--wait_interval', type=float,
                         help='The wait in between runs (s).')
 

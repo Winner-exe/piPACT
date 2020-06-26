@@ -6,7 +6,7 @@ from typing import *
 
 DEFAULT_ARGS = {'distance_increment': 0, 'wait_interval': 60}
 OPTIONAL_ARGS = ['distance_increment', 'wait_interval']
-REMOVE_ARGS = ['--distance_increment', '--wait_interval', '--distance_final', '--timeout_final', 'iterations']
+REMOVE_ARGS = ['--distance_increment', '--wait_interval', '--distance_final', '--timeout_final', '--iterations']
 
 
 def parse_args(args: List[str]) -> Dict[str, str]:
@@ -113,7 +113,7 @@ def main(args: List[str]):
             raise ValueError("Distance increment must allow final distance to be reached.")
     elif parsed_args.get('timeout_final'):
         start_time: float = time.monotonic()
-        while (time.monotonic() - start_time) < parsed_args.get('distance_final'):
+        while (time.monotonic() - start_time) < parsed_args.get('timeout_final'):
             pi_pact.main(arg_list)
             distance -= config.get('distance_increment')
             arg_list[args.index('--distance') + 1] = str(distance)

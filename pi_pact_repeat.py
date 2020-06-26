@@ -4,8 +4,11 @@ import sys
 import time
 from typing import *
 
+# Default configuration
 DEFAULT_ARGS = {'distance_increment': 0, 'wait_interval': 60}
 OPTIONAL_ARGS = ['distance_increment', 'wait_interval']
+
+# List of args specific to this script that cannot be passed to pi_pact.py
 REMOVE_ARGS = ['--distance_increment', '--wait_interval', '--distance_final', '--timeout_final', '--iterations']
 
 
@@ -29,6 +32,7 @@ def parse_args(args: List[str]) -> Dict[str, str]:
     parser.add_argument('--wait_interval', type=float,
                         help='The wait in between runs (s).')
 
+    # User must select exactly one way for this script to terminate.
     finish_group = parser.add_mutually_exclusive_group(required=True)
     finish_group.add_argument('--distance_final', type=float,
                               help='The final distance to run pi_pact.py on.')
@@ -71,8 +75,6 @@ def load_config(parsed_args: Dict[str, str]) -> Dict[str, str]:
         Configuration dictionary.
     """
     config = dict()
-    config['distance'] = parsed_args.get('distance')
-    print(parsed_args)
 
     for arg in OPTIONAL_ARGS:
         if parsed_args.get(arg):
@@ -94,7 +96,9 @@ def main(args: List[str]):
     """
     parsed_args: dict = parse_args(args)
     config: dict = load_config(parsed_args)
-    distance: float = config.get('distance')
+    distance: float = parsed_args.get('distance')
+
+    # Get a valid list of command-line arguments for pi_pact.py.
     arg_list: List[str] = args
     for arg in REMOVE_ARGS:
         if arg in arg_list:
@@ -102,15 +106,18 @@ def main(args: List[str]):
             arg_list.remove(arg)
     arg_list[args.index('--distance') + 1] = str(distance)
 
+    # Script stops once a certain distance measurement is reached.
     if parsed_args.get('distance_final'):
-        if (distance - parsed_args.get('distance_final')) / config.get('distance_increment') < 0:
-            while (distance - parsed_args.get('distance_final')) / config.get('distance_increment') < 0:
+        if (distance - parsed_args.get('distance_final')) / config.get('distance_increment') <= 0:
+            while (distance - parsed_args.get('distance_final')) / config.get('distance_increment') <= 0:
                 pi_pact.main(arg_list)
                 distance -= config.get('distance_increment')
                 arg_list[args.index('--distance') + 1] = str(distance)
                 time.sleep(config.get('wait_interval'))
         else:
             raise ValueError("Distance increment must allow final distance to be reached.")
+
+    # Script stops after a given timeout.
     elif parsed_args.get('timeout_final'):
         start_time: float = time.monotonic()
         while (time.monotonic() - start_time) < parsed_args.get('timeout_final'):
@@ -118,6 +125,8 @@ def main(args: List[str]):
             distance -= config.get('distance_increment')
             arg_list[args.index('--distance') + 1] = str(distance)
             time.sleep(config.get('wait_interval'))
+
+    # Script stops after running n times.
     else:
         for i in range(parsed_args.get('iterations')):
             pi_pact.main(arg_list)

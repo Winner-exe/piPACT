@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sklearn
-from sklearn.model_selection import cross_val_score, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import MinMaxScaler
 # import matplotlib.pyplot as plt
@@ -11,6 +11,7 @@ import pickle
 
 
 def main():
+    """Uses Random Forest Regression to model the relationship between distance, rssi, and other variables."""
     data: pd.DataFrame = pd.DataFrame(columns=['ADDRESS', 'TIMESTAMP',
                                                'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE'])
     csv_file: Path
@@ -19,7 +20,7 @@ def main():
         if datapart.shape[0] > 10000:
             datapart = datapart.head(10000)
         data = data.append(datapart)
-    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR'], 1)
+    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER'], 1)
 
     PREDICT: str = 'DISTANCE'
     TEST_SIZE: float = 0.1
@@ -62,4 +63,5 @@ def main():
 
 
 if __name__ == "__main__":
+    """Script execution."""
     main()

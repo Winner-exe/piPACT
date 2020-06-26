@@ -1,0 +1,9 @@
+Variables:
+  - RSSI (dBm)
+  - Distance (m)
+
+Constants:
+  - Devices: 2 x Raspberry Pi 4 Model B 2GB RAM, no SENSE HAT equipped
+  - Environment: indoors
+  - Obstructions: none
+  - TX Power: 1

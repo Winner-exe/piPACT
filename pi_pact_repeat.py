@@ -35,6 +35,28 @@ def parse_args(args: List[str]) -> Dict[str, str]:
                               help='The total timeout for this script (s).')
     finish_group.add_argument('-niter', '--iterations', type=int,
                               help='The number of times to run pi_pact.py')
+
+    # args from pi_pact.py
+    mode_group = parser.add_mutually_exclusive_group(required=True)  # Note: means this script can be run as an
+    # advertiser OR a scanner, but not both
+    mode_group.add_argument('-a', '--advertiser', action='store_true',
+                            help="Beacon advertiser mode.")
+    mode_group.add_argument('-s', '--scanner', action='store_true',
+                            help="Beacon scanner mode.")
+    parser.add_argument('--config_yml', help="Configuration YAML.")
+    parser.add_argument('--control_file', help="Control file.")
+    parser.add_argument('--scan_prefix', help="Scan output file prefix.")
+    parser.add_argument('--uuid', help="Beacon advertiser UUID.")
+    parser.add_argument('--major', type=int,
+                        help="Beacon advertiser major value.")
+    parser.add_argument('--minor', type=int,
+                        help="Beacon advertiser minor value.")
+    parser.add_argument('--tx_power', type=int,
+                        help="Beacon advertiser TX power.")
+    parser.add_argument('--interval', type=int,
+                        help="Beacon advertiser interval (ms).")
+    parser.add_argument('--revist', type=int,
+                        help="Beacon scanner revisit interval (s)")
     return vars(parser.parse_args(args))
 
 

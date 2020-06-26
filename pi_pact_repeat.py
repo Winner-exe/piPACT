@@ -71,10 +71,10 @@ def load_config(parsed_args: Dict[str, str]) -> Dict[str, str]:
     """
     config = dict()
     config['--distance'] = parsed_args.get('--distance')
-    print(parsed_args.get('--distance'))
+    print(parsed_args)
 
     for arg in OPTIONAL_ARGS:
-        if parsed_args[arg]:
+        if parsed_args.get(arg):
             config[arg] = parsed_args.get(arg)
         else:
             config[arg] = DEFAULT_ARGS.get(arg)

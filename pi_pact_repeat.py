@@ -4,8 +4,8 @@ import sys
 import time
 from typing import *
 
-DEFAULT_ARGS = {'dinc': 0, 'wint': 60}
-OPTIONAL_ARGS = ['dinc', 'wint']
+DEFAULT_ARGS = {'distance_increment': 0, 'wait_interval': 60}
+OPTIONAL_ARGS = ['distance_increment', 'wait_interval']
 
 
 def parse_args(args: List[str]) -> Dict[str, str]:
@@ -97,28 +97,28 @@ def main(args: List[str]):
     arg_list: List[str] = args
     arg_list[args.index('--distance') + 1] = str(distance)
 
-    if parsed_args['dfinal']:
-        if (distance - parsed_args.get('dfinal')) / config.get('dinc') < 0:
-            while (distance - parsed_args.get('dfinal')) / config.get('dinc') < 0:
+    if parsed_args.get('distance_final'):
+        if (distance - parsed_args.get('distance_final')) / config.get('distance_increment') < 0:
+            while (distance - parsed_args.get('distance_final')) / config.get('distance_increment') < 0:
                 pi_pact.main(arg_list)
-                distance -= config.get('dinc')
+                distance -= config.get('distance_increment')
                 arg_list[args.index('--distance') + 1] = str(distance)
-                time.sleep(config.get('wint'))
+                time.sleep(config.get('wait_interval'))
         else:
             raise ValueError("Distance increment must allow final distance to be reached.")
-    elif parsed_args.get('tfinal'):
+    elif parsed_args.get('timeout_final'):
         start_time: float = time.monotonic()
-        while (time.monotonic() - start_time) < parsed_args.get('dfinal'):
+        while (time.monotonic() - start_time) < parsed_args.get('distance_final'):
             pi_pact.main(arg_list)
-            distance -= config.get('dinc')
+            distance -= config.get('distance_increment')
             arg_list[args.index('--distance') + 1] = str(distance)
-            time.sleep(config.get('wint'))
+            time.sleep(config.get('wait_interval'))
     else:
-        for i in range(parsed_args.get('niter')):
+        for i in range(parsed_args.get('iterations')):
             pi_pact.main(arg_list)
-            distance -= config.get('dinc')
+            distance -= config.get('distance_increment')
             arg_list[args.index('--distance') + 1] = str(distance)
-            time.sleep(config.get('wint'))
+            time.sleep(config.get('wait_interval'))
 
 
 if __name__ == '__main__':

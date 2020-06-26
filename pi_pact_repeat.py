@@ -6,6 +6,8 @@ from typing import *
 
 DEFAULT_ARGS = {'distance_increment': 0, 'wait_interval': 60}
 OPTIONAL_ARGS = ['distance_increment', 'wait_interval']
+REMOVE_ARGS = ['-dinc', '--distance_increment', '-wint', '--wait_interval', '-dfinal', '--distance_final',
+               '-tfinal', '--timeout_final', 'niter', 'iterations']
 
 
 def parse_args(args: List[str]) -> Dict[str, str]:
@@ -95,6 +97,10 @@ def main(args: List[str]):
     config: dict = load_config(parsed_args)
     distance: float = config.get('distance')
     arg_list: List[str] = args
+    for arg in REMOVE_ARGS:
+        if arg in arg_list:
+            del arg_list[arg_list.index(arg) + 1]
+            arg_list.remove(arg)
     arg_list[args.index('--distance') + 1] = str(distance)
 
     if parsed_args.get('distance_final'):

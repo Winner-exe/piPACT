@@ -95,14 +95,14 @@ def main(args: List[str]):
     config: dict = load_config(parsed_args)
     distance: float = config.get('distance')
     arg_list: List[str] = args
-    arg_list[args.index('distance') + 1] = str(distance)
+    arg_list[args.index('--distance') + 1] = str(distance)
 
     if parsed_args['dfinal']:
         if (distance - parsed_args.get('dfinal')) / config.get('dinc') < 0:
             while (distance - parsed_args.get('dfinal')) / config.get('dinc') < 0:
                 pi_pact.main(arg_list)
                 distance -= config.get('dinc')
-                arg_list[args.index('distance') + 1] = str(distance)
+                arg_list[args.index('--distance') + 1] = str(distance)
                 time.sleep(config.get('wint'))
         else:
             raise ValueError("Distance increment must allow final distance to be reached.")
@@ -111,13 +111,13 @@ def main(args: List[str]):
         while (time.monotonic() - start_time) < parsed_args.get('dfinal'):
             pi_pact.main(arg_list)
             distance -= config.get('dinc')
-            arg_list[args.index('distance') + 1] = str(distance)
+            arg_list[args.index('--distance') + 1] = str(distance)
             time.sleep(config.get('wint'))
     else:
         for i in range(parsed_args.get('niter')):
             pi_pact.main(arg_list)
             distance -= config.get('dinc')
-            arg_list[args.index('distance') + 1] = str(distance)
+            arg_list[args.index('--distance') + 1] = str(distance)
             time.sleep(config.get('wint'))
 
 

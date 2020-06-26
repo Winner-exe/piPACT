@@ -37,7 +37,7 @@ usage: pi_pact.py [-h] (-a | -s) [--config_yml CONFIG_YML]
                   [--control_file CONTROL_FILE] [--scan_prefix SCAN_PREFIX]
                   [--timeout TIMEOUT] [--uuid UUID] [--major MAJOR]
                   [--minor MINOR] [--tx_power TX_POWER] [--interval INTERVAL]
-                  [--revist REVIST]
+                  [--revist REVIST] [--distance DISTANCE]
 
 BLE beacon advertiser or scanner. Command line arguments will override their
 corresponding value in a configuration file if specified.
@@ -59,7 +59,8 @@ optional arguments:
   --minor MINOR         Beacon advertiser minor value.
   --tx_power TX_POWER   Beacon advertiser TX power.
   --interval INTERVAL   Beacon advertiser interval (ms).
-  --revist REVIST       Beacon scanner revisit interval (s)
+  --revist REVIST       Beacon scanner revisit interval (s).
+  --distance DISTANCE   Pre-measured distance (m).
 ```
 
 ## Configuration
@@ -86,6 +87,7 @@ scanner:
   scan_prefix: 'pi_pact_scan' # Prefix to attach to scan output files
   timeout: 20 # Scanning timeout (s)
   revisit: 1 # Interval at which to scan (s)
+  distance: 0.2 # Pre-measured distance between devices (m)
   filters: # Filters
     ADDRESS:
     RSSI:
@@ -224,3 +226,4 @@ The only explicit output of this code are the published log messages (console an
 - MINOR: The minor value sent in beacon advertisement.
 - TX POWER: The Tx power value sent in beacon advertisement.
 - RSSI: The measured RSSI (dBm) of the received beacon advertisement.
+- DISTANCE: The pre-measured distance (m) between the devices.

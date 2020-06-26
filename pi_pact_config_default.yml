@@ -16,6 +16,7 @@ scanner:
   scan_prefix: 'pi_pact_scan' # Prefix to attach to scan output files
   timeout: 20 # Scanning timeout (s)
   revisit: 1 # Interval at which to scan (s)
+  distance: 0.2 # Pre-measured distance between devices (m)
   filters: # Filters
     ADDRESS:
     RSSI:

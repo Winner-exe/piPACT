@@ -41,6 +41,7 @@ DEFAULT_CONFIG: dict = {
         'scan_prefix': "pi_pact_scan",
         'timeout': None,
         'revisit': 1,
+        'distance': 0.2,
         'filters': {}
     },
     'logger': {
@@ -83,13 +84,14 @@ BLE_DEVICE = "hci0"
 CONTROL_INTERVAL = 1  # (s)
 MAX_TIMEOUT = 600  # (s)
 ID_FILTERS = ['ADDRESS', 'UUID', 'MAJOR', 'MINOR', 'TX POWER']
-MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI']
+MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI', 'DISTANCE']
 
 # Limits
 MAJOR_LIMITS = [1, 65535]
 MINOR_LIMITS = [1, 65535]
 TX_POWER_LIMITS = [-40, 4]
 INTERVAL_LIMITS = [20, 10000]  # (ms)
+DISTANCE_LIMITS = [0, 20000]  # (m)
 ALLOWABLE_FILTERS = ID_FILTERS + MEASUREMENT_FILTERS
 
 
@@ -463,6 +465,21 @@ class Scanner(object):
         self.__revisit = value
 
     @property
+    def distance(self) -> float:
+        """Pre-measured distance getter."""
+        return self.__distance
+
+    @distance.setter
+    def distance(self, value: Union[float, int]):
+        """Pre-measured distance setter."""
+        if not isinstance(value, (float, int)):
+            raise TypeError("Distance must be a float or integer.")
+        elif value <= 0:
+            raise ValueError("Distance must be strictly positive.")
+
+        self.__distance = value
+
+    @property
     def filters(self) -> dict:
         """BLE beacon scanner filters getter."""
         return self.__filters
@@ -528,11 +545,12 @@ class Scanner(object):
         for (scan, timestamp) in zip_longest(scans, timestamps):
             for address, payload in scan.items():
                 advertisement = {'ADDRESS': address, 'TIMESTAMP': timestamp, 'UUID': payload[0], 'MAJOR': payload[1],
-                                 'MINOR': payload[2], 'TX POWER': payload[3], 'RSSI': payload[4]}
+                                 'MINOR': payload[2], 'TX POWER': payload[3], 'RSSI': payload[4],
+                                 'DISTANCE': self.distance}
                 advertisements.append(advertisement)
         # Format into DataFrame
         return pd.DataFrame(advertisements, columns=['ADDRESS', 'TIMESTAMP',
-                                                     'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI'])
+                                                     'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE'])
 
     def scan(self, scan_prefix='', timeout: int = 0, revisit: int = 1) -> pd.DataFrame:
         """Execute BLE beacon scan.
@@ -593,12 +611,14 @@ class Scanner(object):
         # Process, filter, and output received scans
         advertisements = self.process_scans(scans, timestamps)
         advertisements = self.filter_advertisements(advertisements)
-        advertisements.to_csv(scan_file, index_label='SCAN')  # TODO examine possible bug here
+        advertisements.to_csv(scan_file, index_label='SCAN')
         return advertisements
 
 
 def setup_logger(config: dict) -> logging.Logger:
     """Setup and return logger based on configuration."""
+    log_file: Path = Path(LOG_NAME).resolve()
+    log_file.chmod(0o777)
     logging.config.dictConfig(config['config'])
     return logging.getLogger(config['name'])
 
@@ -610,7 +630,7 @@ def close_logger(logger):
         logger.removeHandler(handler)
 
 
-def load_config(parsed_args: argparse.Namespace) -> dict:
+def load_config(parsed_args: Dict[str, str]) -> dict:
     """Load configuration.
 
     Loads beacon/scanner configuration from parsed input argument. Any
@@ -689,6 +709,8 @@ def parse_args(args: List[str]):
                         help="Beacon advertiser interval (ms).")
     parser.add_argument('--revist', type=int,
                         help="Beacon scanner revisit interval (s)")
+    parser.add_argument('--distance', type=float,
+                        help="Pre-measured distance between the devices (m).")
     return vars(parser.parse_args(args))
 
 
@@ -704,7 +726,7 @@ def main(args: List[str]) -> Union[None, pd.DataFrame]:
         then scanned advertisements are returned in pandas.DataFrame.
     """
     # Initial setup
-    parsed_args: argparse.Namespace = parse_args(args)
+    parsed_args: Dict[str, str] = parse_args(args)
     config: dict = load_config(parsed_args)
     logger: logging.Logger = setup_logger(config['logger'])
     logger.debug(f"Beacon configuration - {config['advertiser']}")
@@ -716,6 +738,7 @@ def main(args: List[str]) -> Union[None, pd.DataFrame]:
             logger.info("Beacon advertiser mode selected.")
             advertiser = Advertiser(logger, **config['advertiser'])
             advertiser.advertise()
+            # noinspection PyTypeChecker
             output = None
         elif parsed_args['scanner']:
             logger.info("Beacon scanner mode selected.")
@@ -726,6 +749,7 @@ def main(args: List[str]) -> Union[None, pd.DataFrame]:
         logger.exception("Fatal exception encountered")
     finally:
         close_logger(logger)
+    # noinspection PyUnboundLocalVariable
     return output
 
 

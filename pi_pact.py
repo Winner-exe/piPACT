@@ -471,7 +471,12 @@ class Scanner(object):
 
     @distance.setter
     def distance(self, value: Union[float, int]):
-        """Pre-measured distance setter."""
+        """Pre-measured distance setter.
+
+        Raises:
+            TypeError: Distance must be a float or integer.
+            ValueError: Distance must be strictly positive.
+        """
         if not isinstance(value, (float, int)):
             raise TypeError("Distance must be a float or integer.")
         elif value <= 0:
@@ -628,6 +633,8 @@ def close_logger(logger):
     for handler in logger.handlers[:]:
         handler.close()
         logger.removeHandler(handler)
+    log_file: Path = Path(LOG_NAME).resolve()
+    log_file.chmod(0o777)
 
 
 def load_config(parsed_args: Dict[str, str]) -> dict:
@@ -673,7 +680,7 @@ def load_config(parsed_args: Dict[str, str]) -> dict:
     return config
 
 
-def parse_args(args: List[str]):
+def parse_args(args: List[str]) -> Dict[str, str]:
     """Input argument parser.
 
     Args:

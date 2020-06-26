@@ -22,7 +22,7 @@ def parse_args(args: List[str]) -> Dict[str, str]:
         Dictionary containing parsed input arguments. Keys are argument names.
     """
     parser = argparse.ArgumentParser(description="Script to run pi_pact.py repeatedly with variable"
-                                                 "distance and interval increments")
+                                                 " distance and interval increments")
     parser.add_argument('--distance_increment', type=float,
                         help='The change in distance between runs (m).')
     parser.add_argument('--distance', type=float, required=True,

@@ -6,8 +6,7 @@ from typing import *
 
 DEFAULT_ARGS = {'distance_increment': 0, 'wait_interval': 60}
 OPTIONAL_ARGS = ['distance_increment', 'wait_interval']
-REMOVE_ARGS = ['-dinc', '--distance_increment', '-wint', '--wait_interval', '-dfinal', '--distance_final',
-               '-tfinal', '--timeout_final', 'niter', 'iterations']
+REMOVE_ARGS = ['--distance_increment', '--wait_interval', '--distance_final', '--timeout_final', 'iterations']
 
 
 def parse_args(args: List[str]) -> Dict[str, str]:
@@ -21,21 +20,21 @@ def parse_args(args: List[str]) -> Dict[str, str]:
     """
     parser = argparse.ArgumentParser(description="Script to run pi_pact.py repeatedly with variable"
                                                  "distance and interval increments")
-    parser.add_argument('-dinc', '--distance_increment', type=float,
+    parser.add_argument('--distance_increment', type=float,
                         help='The change in distance between runs (m).')
     parser.add_argument('--distance', type=float, required=True,
                         help="Initial pre-measured distance between the devices (m).")
     parser.add_argument('--timeout', type=float, required=True,
                         help="Timeout (s) for both beacon advertiser and  scanner modes.")
-    parser.add_argument('-wint', '--wait_interval', type=float,
+    parser.add_argument('--wait_interval', type=float,
                         help='The wait in between runs (s).')
 
     finish_group = parser.add_mutually_exclusive_group(required=True)
-    finish_group.add_argument('-dfinal', '--distance_final', type=float,
+    finish_group.add_argument('--distance_final', type=float,
                               help='The final distance to run pi_pact.py on.')
-    finish_group.add_argument('-tfinal', '--timeout_final', type=int,
+    finish_group.add_argument('--timeout_final', type=int,
                               help='The total timeout for this script (s).')
-    finish_group.add_argument('-niter', '--iterations', type=int,
+    finish_group.add_argument('--iterations', type=int,
                               help='The number of times to run pi_pact.py')
 
     # args from pi_pact.py

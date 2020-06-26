@@ -274,4 +274,4 @@ The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. T
      --tx_power TX_POWER   Beacon advertiser TX power.
      --interval INTERVAL   Beacon advertiser interval (ms).
      --revist REVIST       Beacon scanner revisit interval (s)
-    ```
+```

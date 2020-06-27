@@ -10,6 +10,7 @@ Stated versions are tested and validated. Newer or older versions are not guaran
 - numpy
 - pandas
 - pyyaml
+- sensehat
 
 # Installation
 1. Install the requirement.
@@ -37,7 +38,7 @@ usage: pi_pact.py [-h] (-a | -s) [--config_yml CONFIG_YML]
                   [--control_file CONTROL_FILE] [--scan_prefix SCAN_PREFIX]
                   [--timeout TIMEOUT] [--uuid UUID] [--major MAJOR]
                   [--minor MINOR] [--tx_power TX_POWER] [--interval INTERVAL]
-                  [--revist REVIST] [--distance DISTANCE]
+                  [--revist REVIST] [--distance DISTANCE] [--use_sense_hat USE_SENSE_HAT]
 
 BLE beacon advertiser or scanner. Command line arguments will override their
 corresponding value in a configuration file if specified.
@@ -61,6 +62,7 @@ optional arguments:
   --interval INTERVAL   Beacon advertiser interval (ms).
   --revist REVIST       Beacon scanner revisit interval (s).
   --distance DISTANCE   Pre-measured distance (m).
+  --use_sense_hat USE_SENSE_HAT Toggles use of sense hat.
 ```
 
 ## Configuration
@@ -88,6 +90,7 @@ scanner:
   timeout: 20 # Scanning timeout (s)
   revisit: 1 # Interval at which to scan (s)
   distance: 0.2 # Pre-measured distance between devices (m)
+  use_sense_hat: True # Toggles use of sense hat.
   filters: # Filters
     ADDRESS:
     RSSI:
@@ -227,6 +230,12 @@ The only explicit output of this code are the published log messages (console an
 - TX POWER: The Tx power value sent in beacon advertisement.
 - RSSI: The measured RSSI (dBm) of the received beacon advertisement.
 - DISTANCE: The pre-measured distance (m) between the devices.
+- TEMPERATURE: The temperature (degrees Celsius) measured using the humidity sensor.
+- HUMIDITY: The percentage of relative humidity measured using the humidity sensor.
+- PRESSURE: The pressure (millibars) measured using the pressure sensor.
+- PITCH: The angle (degrees) measured using the aircraft principal axis of pitch.
+- ROLL: The angle (degrees) measured using the aircraft principal axis of roll.
+- YAW: The angle (degrees) measured using the aircraft principal axis of yaw.
 
 # Repeated Execution
 The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. This script can take the argument `DISTANCE_INCREMENT` (default value of 0) to automatically adjust the pre-measured distance with each run, although users should make sure they move the pis to their correct positions in between runs. Passing the argument `WAIT_INTERVAL` (default value of 60) can give the user more time to reposition the pis in between runs.
@@ -240,7 +249,7 @@ The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. T
                             [--control_file CONTROL_FILE]
                             [--scan_prefix SCAN_PREFIX] [--uuid UUID]
                             [--major MAJOR] [--minor MINOR] [--tx_power TX_POWER]
-                            [--interval INTERVAL] [--revist REVIST]
+                            [--interval INTERVAL] [--revist REVIST] [--use_sense_hat USE_SENSE_HAT]
 
    Script to run pi_pact.py repeatedly with variable distance and interval
    increments
@@ -274,4 +283,5 @@ The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. T
      --tx_power TX_POWER   Beacon advertiser TX power.
      --interval INTERVAL   Beacon advertiser interval (ms).
      --revist REVIST       Beacon scanner revisit interval (s)
+     --use_sense_hat USE_SENSE_HAT Toggles use of sense hat.
 ```

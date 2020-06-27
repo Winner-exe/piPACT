@@ -14,7 +14,7 @@ def main():
     """Uses Random Forest Regression to model the relationship between distance, rssi, and other variables."""
     data: pd.DataFrame = pd.DataFrame(columns=['ADDRESS', 'TIMESTAMP',
                                                'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE', 'TEMPERATURE',
-                                               'HUMIDITY', 'INTERNAL TEMPERATURE', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
+                                               'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
     csv_file: Path
     for csv_file in Path('.').glob('indoor-noObstruct-rssi-distance-data/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)

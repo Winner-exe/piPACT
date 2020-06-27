@@ -227,45 +227,51 @@ The only explicit output of this code are the published log messages (console an
 - TX POWER: The Tx power value sent in beacon advertisement.
 - RSSI: The measured RSSI (dBm) of the received beacon advertisement.
 - DISTANCE: The pre-measured distance (m) between the devices.
-usage: pi_pact_repeat.py [-h] [--distance_increment DISTANCE_INCREMENT]
-                         --distance DISTANCE --timeout TIMEOUT
-                         [--wait_interval WAIT_INTERVAL]
-                         (--distance_final DISTANCE_FINAL | --timeout_final TIMEOUT_FINAL | --iterations ITERATIONS)
-                         (-a | -s) [--config_yml CONFIG_YML]
-                         [--control_file CONTROL_FILE]
-                         [--scan_prefix SCAN_PREFIX] [--uuid UUID]
-                         [--major MAJOR] [--minor MINOR] [--tx_power TX_POWER]
-                         [--interval INTERVAL] [--revist REVIST]
 
-Script to run pi_pact.py repeatedly with variabledistance and interval
-increments
+# Repeated Execution
+The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. This script can take the argument `DISTANCE_INCREMENT` (default value of 0) to automatically adjust the pre-measured distance with each run, although users should make sure they move the pis to their correct positions in between runs. Passing the argument `WAIT_INTERVAL` (default value of 60) can give the user more time to reposition the pis in between runs.
+   ```console
+   pi@raspberrypi:~ $ sudo python3 pi_pact_repeat.py --help
+   usage: pi_pact_repeat.py [-h] [--distance_increment DISTANCE_INCREMENT]
+                            --distance DISTANCE --timeout TIMEOUT
+                            [--wait_interval WAIT_INTERVAL]
+                            (--distance_final DISTANCE_FINAL | --timeout_final TIMEOUT_FINAL | --iterations ITERATIONS)
+                            (-a | -s) [--config_yml CONFIG_YML]
+                            [--control_file CONTROL_FILE]
+                            [--scan_prefix SCAN_PREFIX] [--uuid UUID]
+                            [--major MAJOR] [--minor MINOR] [--tx_power TX_POWER]
+                            [--interval INTERVAL] [--revist REVIST]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --distance_increment DISTANCE_INCREMENT
-                        The change in distance between runs (m).
-  --distance DISTANCE   Initial pre-measured distance between the devices (m).
-  --timeout TIMEOUT     Timeout (s) for both beacon advertiser and scanner
-                        modes.
-  --wait_interval WAIT_INTERVAL
-                        The wait in between runs (s).
-  --distance_final DISTANCE_FINAL
-                        The final distance to run pi_pact.py on.
-  --timeout_final TIMEOUT_FINAL
-                        The total timeout for this script (s).
-  --iterations ITERATIONS
-                        The number of times to run pi_pact.py
-  -a, --advertiser      Beacon advertiser mode.
-  -s, --scanner         Beacon scanner mode.
-  --config_yml CONFIG_YML
-                        Configuration YAML.
-  --control_file CONTROL_FILE
-                        Control file.
-  --scan_prefix SCAN_PREFIX
-                        Scan output file prefix.
-  --uuid UUID           Beacon advertiser UUID.
-  --major MAJOR         Beacon advertiser major value.
-  --minor MINOR         Beacon advertiser minor value.
-  --tx_power TX_POWER   Beacon advertiser TX power.
-  --interval INTERVAL   Beacon advertiser interval (ms).
-  --revist REVIST       Beacon scanner revisit interval (s)
+   Script to run pi_pact.py repeatedly with variable distance and interval
+   increments
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     --distance_increment DISTANCE_INCREMENT
+                           The change in distance between runs (m).
+     --distance DISTANCE   Initial pre-measured distance between the devices (m).
+     --timeout TIMEOUT     Timeout (s) for both beacon advertiser and scanner
+                           modes.
+     --wait_interval WAIT_INTERVAL
+                           The wait in between runs (s).
+     --distance_final DISTANCE_FINAL
+                           The final distance to run pi_pact.py on.
+     --timeout_final TIMEOUT_FINAL
+                           The total timeout for this script (s).
+     --iterations ITERATIONS
+                           The number of times to run pi_pact.py
+     -a, --advertiser      Beacon advertiser mode.
+     -s, --scanner         Beacon scanner mode.
+     --config_yml CONFIG_YML
+                           Configuration YAML.
+     --control_file CONTROL_FILE
+                           Control file.
+     --scan_prefix SCAN_PREFIX
+                           Scan output file prefix.
+     --uuid UUID           Beacon advertiser UUID.
+     --major MAJOR         Beacon advertiser major value.
+     --minor MINOR         Beacon advertiser minor value.
+     --tx_power TX_POWER   Beacon advertiser TX power.
+     --interval INTERVAL   Beacon advertiser interval (ms).
+     --revist REVIST       Beacon scanner revisit interval (s)
+```

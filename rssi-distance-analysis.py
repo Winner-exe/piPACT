@@ -14,9 +14,9 @@ def main():
     """Uses Random Forest Regression to model the relationship between distance, rssi, and other variables."""
     data: pd.DataFrame = pd.DataFrame(columns=['ADDRESS', 'TIMESTAMP',
                                                'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE', 'TEMPERATURE',
-                                               'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
+                                               'HUMIDITY', 'INTERNAL TEMPERATURE', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
     csv_file: Path
-    for csv_file in Path('.').glob('*.csv'):
+    for csv_file in Path('.').glob('indoor-noObstruct-rssi-distance-data/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)
         if datapart.shape[0] > 10000:
             datapart = datapart.head(10000)
@@ -47,7 +47,7 @@ def main():
         },
         cv=5, scoring='neg_mean_squared_error', verbose=0, n_jobs=-1)
 
-    grid_result = gsc.fit(X, y)
+    grid_result = gsc.fit(X_train, y_train)
     best_params = grid_result.best_params_
 
     rfr = RandomForestRegressor(max_depth=best_params["max_depth"], n_estimators=best_params["n_estimators"],

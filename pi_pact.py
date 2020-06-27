@@ -15,6 +15,7 @@ from itertools import zip_longest
 import logging
 import logging.config
 import logging.handlers
+import os
 import pandas as pd
 from pathlib import Path
 from sense_hat import SenseHat
@@ -86,7 +87,8 @@ BLE_DEVICE = "hci0"
 CONTROL_INTERVAL = 1  # (s)
 MAX_TIMEOUT = 600  # (s)
 ID_FILTERS = ['ADDRESS', 'UUID', 'MAJOR', 'MINOR', 'TX POWER']
-MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI', 'DISTANCE', 'TEMPERATURE', 'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW']
+MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI', 'DISTANCE', 'TEMPERATURE',
+                       'HUMIDITY', 'INTERNAL TEMPERATURE', 'PRESSURE', 'PITCH', 'ROLL', 'YAW']
 
 # Limits
 MAJOR_LIMITS = [1, 65535]
@@ -576,6 +578,7 @@ class Scanner(object):
                                      'RSSI': payload[4], 'DISTANCE': self.distance,
                                      'TEMPERATURE': self.__sense_hat.get_temperature(),
                                      'HUMIDITY': self.__sense_hat.get_humidity(),
+                                     'INTERNAL TEMPERATURE': os.popen("vcgencmd measure_temp").readline(),
                                      'PRESSURE': self.__sense_hat.get_pressure(),
                                      'PITCH': self.__sense_hat.get_orientation()['pitch'],
                                      'ROLL': self.__sense_hat.get_orientation()['roll'],
@@ -584,7 +587,7 @@ class Scanner(object):
             # Format into DataFrame
             return pd.DataFrame(advertisements, columns=['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR',
                                                          'TX POWER', 'RSSI', 'DISTANCE', 'TEMPERATURE', 'HUMIDITY',
-                                                         'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
+                                                         'INTERNAL TEMPERATURE', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
         else:
             for (scan, timestamp) in zip_longest(scans, timestamps):
                 for address, payload in scan.items():

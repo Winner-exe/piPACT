@@ -62,6 +62,8 @@ def parse_args(args: List[str]) -> Dict[str, str]:
                         help="Beacon advertiser interval (ms).")
     parser.add_argument('--revist', type=int,
                         help="Beacon scanner revisit interval (s)")
+    parser.add_argument('--use_sense_hat', type=bool,
+                        help="Toggles use of sense hat.")
     return vars(parser.parse_args(args))
 
 

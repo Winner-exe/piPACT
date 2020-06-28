@@ -1,5 +1,5 @@
 # BWSI piPACT Reference Code
-BWSI piPACT Reference/instructor developed code for Raspberry Pi based BLE RSSI measurement collection.
+BWSI piPACT Reference/instructor developed code for Raspberry Pi based BLE RSSI measurement collection. Modified by Winner-exe.
 
 # Requirements
 Stated versions are tested and validated. Newer or older versions are not guaranteed to work.
@@ -10,18 +10,18 @@ Stated versions are tested and validated. Newer or older versions are not guaran
 - numpy
 - pandas
 - pyyaml
-- sensehat
+- sense_hat
 
 # Installation
 1. Install the requirement.
 2. Clone the repository.
-3. Navigate into the `reference_code` folder that was created.
+3. Navigate into the `piPACT` folder that was created.
    ```console
-   pi@raspberrypi:~ $ cd reference_code
+   pi@raspberrypi:~ $ cd piPACT
    ```
 4. Test the repository by attempting to import the piPACT reference code without error.
    ```console
-   pi@raspberrypi:~/reference_code $ python3
+   pi@raspberrypi:~/piPACT $ python3
    Python 3.7.3 (default, Dec 20 2019, 18:57:59) 
    [GCC 8.3.0] on linux
    Type "help", "copyright", "credits" or "license" for more information.

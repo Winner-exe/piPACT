@@ -230,7 +230,9 @@ The only explicit output of this code are the published log messages (console an
 - TX POWER: The Tx power value sent in beacon advertisement.
 - RSSI: The measured RSSI (dBm) of the received beacon advertisement.
 - DISTANCE: The pre-measured distance (m) between the devices.
-- TEMPERATURE: The temperature (degrees Celsius) measured using the humidity sensor.
+
+The following headers are only present if `--use_sense_hat` is set to True (enabled by default):
+- TEMPERATURE: The temperature (degrees Celsius) measured using the humidity sensor. 
 - HUMIDITY: The percentage of relative humidity measured using the humidity sensor.
 - PRESSURE: The pressure (millibars) measured using the pressure sensor.
 - PITCH: The angle (degrees) measured using the aircraft principal axis of pitch.

@@ -17,6 +17,7 @@ scanner:
   timeout: 20 # Scanning timeout (s)
   revisit: 1 # Interval at which to scan (s)
   distance: 0.2 # Pre-measured distance between devices (m)
+  use_sense_hat: True # Toggles use of sense hat.
   filters: # Filters
     ADDRESS:
     RSSI:

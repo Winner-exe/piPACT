@@ -16,7 +16,7 @@ def main():
                                                'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE', 'TEMPERATURE',
                                                'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
     csv_file: Path
-    for csv_file in Path('.').glob('indoor-noObstruct-rssi-distance-data/*.csv'):
+    for csv_file in Path('.').glob('*/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)
         if datapart.shape[0] > 10000:
             datapart = datapart.head(10000)

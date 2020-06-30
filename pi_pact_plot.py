@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib import style
+import numpy as np
 import pandas as pd
 from pathlib import Path
+from scipy.stats import gaussian_kde
 
 
 def main():
@@ -14,20 +16,20 @@ def main():
         if datapart.shape[0] > 10000:
             datapart = datapart.head(10000)
         data = data.append(datapart)
-    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER'], 1)
-    predict: str = 'DISTANCE'
+    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'SCAN'], 1)
+    predict: str = 'RSSI'
 
     style.use("ggplot")
-    fig, axs = plt.subplots(2, int((len(data.columns) + 1) / 2))
+    fig, axs = plt.subplots(2, (len(data.columns)) // 2)
     for i in range(len(data.columns)):  # TODO use a different plotting scheme to better represent center of the data.
         if data.columns[i] != predict:
-            axs[int(i / int((len(data.columns) + 1) / 2)), i % int((len(data.columns) + 1) / 2)].scatter(
-                data[data.columns[i]],
-                data[predict])
-            axs[int(i / int((len(data.columns) + 1) / 2)), i % int((len(data.columns) + 1) / 2)].set_xlabel(
-                data.columns[i])
-            axs[int(i / int((len(data.columns) + 1) / 2)), i % int((len(data.columns) + 1) / 2)].set_ylabel(predict)
-            axs[int(i / int((len(data.columns) + 1) / 2)), i % int((len(data.columns) + 1) / 2)].set_title(
+            axs[i // ((len(data.columns)) // 2), i % ((len(data.columns)) // 2)].hist2d(data[data.columns[i]],
+                                                                                        data[predict],
+                                                                                        bins=30,
+                                                                                        cmap=plt.get_cmap('viridis'))
+            axs[i // ((len(data.columns)) // 2), i % ((len(data.columns)) // 2)].set_xlabel(data.columns[i])
+            axs[i // ((len(data.columns)) // 2), i % ((len(data.columns)) // 2)].set_ylabel(predict)
+            axs[i // ((len(data.columns)) // 2), i % ((len(data.columns)) // 2)].set_title(
                 f'{data.columns[i]} vs. {predict}')
 
     # fig.savefig("pi_pact_plot.png")

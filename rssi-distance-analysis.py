@@ -21,7 +21,7 @@ def main():
         if datapart.shape[0] > 10000:
             datapart = datapart.head(10000)
         data = data.append(datapart)
-    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER'], 1)
+    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'SCAN'], 1)
 
     PREDICT: str = 'DISTANCE'
     TEST_SIZE: float = 0.1

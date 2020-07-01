@@ -35,8 +35,6 @@ def main():
     y_test: np.array
 
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=TEST_SIZE)
-    # svr_model = svm.SVR(kernel='linear', C=111)
-    # svr_model.fit(X_train, y_train)
 
     # Perform Grid-Search
     gsc = GridSearchCV(

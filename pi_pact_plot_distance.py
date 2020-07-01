@@ -5,49 +5,51 @@ import pandas as pd
 from pathlib import Path
 from scipy.stats import gaussian_kde
 
+DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
+                'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW', 'SCAN']
+INDEPEND: str = 'DISTANCE'
+INDEPEND_UNITS: str = 'm'
+DEPEND: str = 'RSSI'
+DEPEND_UNITS: str = 'dBm'
+SAMPLE_SIZE: int = 4000
+BINS: int = 50  # Number of bins to be passed to plt.hist2d.
 
-def main():  # TODO lower and equalize data volume
-    data: pd.DataFrame = pd.DataFrame(columns=['ADDRESS', 'TIMESTAMP',
-                                               'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE'])
+
+def main():
+    """Samples data across all relevant .csv files and
+       shows a 2D histogram depicting RSSI vs. Distance data."""
+
+    # Initialize DataFrame
+    data_copy: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
     csv_file: Path
     for csv_file in Path('.').glob('*/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)
-        if datapart.shape[0] > 10000:
-            datapart = datapart.head(10000)
+        for column in DROP_COLUMNS:
+            if column in datapart.columns:
+                datapart = datapart.drop([column], 1)
+        if datapart.shape[0] > SAMPLE_SIZE:
+            datapart = datapart.head(SAMPLE_SIZE)
+        data_copy = data_copy.append(datapart)
+    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
+
+    # Sample RSSI values from each pre-measured distance
+    for distance in data_copy[INDEPEND].unique():
+        datapart: pd.DataFrame = data_copy[data_copy.DISTANCE == distance]
+        datapart = datapart.sample(SAMPLE_SIZE)
         data = data.append(datapart)
-    data = data.drop(['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'SCAN'], 1)
-    independ: str = 'DISTANCE'
-    predict: str = 'RSSI'
 
-    # fit an array of size [Ndim, Nsamples]
-    new_data = np.vstack([data[independ].to_numpy(dtype=np.float16), data[predict].to_numpy(dtype=np.int8)])
-    print(type(new_data))
-    kde = gaussian_kde(new_data)
-
-    # evaluate on a regular grid
-    xgrid = data[independ].to_numpy(dtype=np.float16)
-    ygrid = data[predict].to_numpy(dtype=np.int8)
-    Xgrid, Ygrid = np.meshgrid(xgrid, ygrid, sparse=True)
-    Z = kde.evaluate(np.vstack([Xgrid.ravel(), Ygrid.ravel()]))
-
-    # Plot the result as an image
-    plt.imshow(Z.reshape(Xgrid.shape),
-               origin='lower', aspect='auto',
-               extent=[-3.5, 3.5, -6, 6],
-               cmap='Blues')
-    cb = plt.colorbar()
-    cb.set_label("density")
-"""
+    # Plot a 2D histogram of RSSI vs. Distance
     style.use("ggplot")
     fig, axs = plt.subplots()
-    axs.hist2d(data[independ], data[predict], bins=30, cmap=plt.get_cmap('viridis'))
-    axs.set_xlabel(independ)
-    axs.set_ylabel(predict)
-    axs.set_title(f'{independ} vs. {predict}')
+    h = axs.hist2d(data[INDEPEND], data[DEPEND], bins=BINS, cmap=plt.get_cmap('viridis'))
+    axs.set_xlabel(f'{INDEPEND} ({INDEPEND_UNITS})')
+    axs.set_ylabel(f'{DEPEND} ({DEPEND_UNITS})')
+    axs.set_title(f'{INDEPEND} ({INDEPEND_UNITS}) vs. {DEPEND} ({DEPEND_UNITS})')
 
-    # fig.savefig("pi_pact_plot.png")
+    plt.colorbar(h[3])
     plt.show()
-"""
+
 
 if __name__ == "__main__":
+    """Script execution."""
     main()

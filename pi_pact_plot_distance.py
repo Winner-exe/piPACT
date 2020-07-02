@@ -46,6 +46,9 @@ def main():
     axs.set_ylabel(f'{DEPEND} ({DEPEND_UNITS})')
     axs.set_title(f'{INDEPEND} ({INDEPEND_UNITS}) vs. {DEPEND} ({DEPEND_UNITS})')
 
+    figure = plt.gcf()
+    figure.canvas.set_window_title('RSSI-Distance Histogram')
+
     plt.colorbar(h[3])
     plt.show()
 

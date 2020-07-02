@@ -759,7 +759,7 @@ def parse_args(args: List[str]) -> Dict[str, str]:
                         help="Beacon advertiser TX power.")
     parser.add_argument('--interval', type=int,
                         help="Beacon advertiser interval (ms).")
-    parser.add_argument('--revist', type=int,
+    parser.add_argument('--revisit', type=int,
                         help="Beacon scanner revisit interval (s)")
     parser.add_argument('--distance', type=float,
                         help="Pre-measured distance between the devices (m).")

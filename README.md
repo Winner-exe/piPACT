@@ -1,5 +1,5 @@
 # BWSI piPACT Reference Code
-BWSI piPACT Reference/instructor developed code for Raspberry Pi based BLE RSSI measurement collection.
+BWSI piPACT Reference/instructor developed code for Raspberry Pi based BLE RSSI measurement collection. Modified by Winner-exe.
 
 # Requirements
 Stated versions are tested and validated. Newer or older versions are not guaranteed to work.
@@ -10,17 +10,18 @@ Stated versions are tested and validated. Newer or older versions are not guaran
 - numpy
 - pandas
 - pyyaml
+- sense_hat
 
 # Installation
 1. Install the requirement.
 2. Clone the repository.
-3. Navigate into the `reference_code` folder that was created.
+3. Navigate into the `piPACT` folder that was created.
    ```console
-   pi@raspberrypi:~ $ cd reference_code
+   pi@raspberrypi:~ $ cd piPACT
    ```
 4. Test the repository by attempting to import the piPACT reference code without error.
    ```console
-   pi@raspberrypi:~/reference_code $ python3
+   pi@raspberrypi:~/piPACT $ python3
    Python 3.7.3 (default, Dec 20 2019, 18:57:59) 
    [GCC 8.3.0] on linux
    Type "help", "copyright", "credits" or "license" for more information.
@@ -37,7 +38,7 @@ usage: pi_pact.py [-h] (-a | -s) [--config_yml CONFIG_YML]
                   [--control_file CONTROL_FILE] [--scan_prefix SCAN_PREFIX]
                   [--timeout TIMEOUT] [--uuid UUID] [--major MAJOR]
                   [--minor MINOR] [--tx_power TX_POWER] [--interval INTERVAL]
-                  [--revist REVIST] [--distance DISTANCE]
+                  [--revist REVIST] [--distance DISTANCE] [--use_sense_hat USE_SENSE_HAT]
 
 BLE beacon advertiser or scanner. Command line arguments will override their
 corresponding value in a configuration file if specified.
@@ -61,17 +62,18 @@ optional arguments:
   --interval INTERVAL   Beacon advertiser interval (ms).
   --revist REVIST       Beacon scanner revisit interval (s).
   --distance DISTANCE   Pre-measured distance (m).
+  --use_sense_hat USE_SENSE_HAT Toggles use of sense hat.
 ```
 
 ## Configuration
 The configuration file is of the YAML format. It is provided with a default configuration which you should change to suit your needs. You will need to reference in-line comments and external module documentation to fully understand all configuration options. 
 
-The configuration YAML will only be used if specified as a commadn line argument. Many indiviudal configuration options can be overwritten by command line provided arguments.
+The configuration YAML will only be used if specified as a command line argument. Many indiviudal configuration options can be overwritten by command line provided arguments.
 
 ```yaml
 # Configuration file for piPACT reference collection software
 
-# Settings for iBeacon advertisment
+# Settings for beacon advertisment
 advertiser:
   control_file: 'advertiser_control' # Control file which stops beacon advertisement before timeout
   timeout: 20 # Advertisement timeout (s)
@@ -88,6 +90,7 @@ scanner:
   timeout: 20 # Scanning timeout (s)
   revisit: 1 # Interval at which to scan (s)
   distance: 0.2 # Pre-measured distance between devices (m)
+  use_sense_hat: True # Toggles use of sense hat.
   filters: # Filters
     ADDRESS:
     RSSI:
@@ -120,6 +123,34 @@ logger:
         handlers:
           - 'console'
           - 'file'
+```
+### Filters
+Filters are a special configuration specific to a scanner and only available via the configuration YAML. They allow users to filter received data such that only data that meets all specified filters. Filters are specified as key-value pairs where the key is the data field to filter on and the value is filter specification (value/bounds). If no filters are specified then all received data is logged.
+
+There are two (2) categories of filters available:
+1. **ID filters**: Filter data based on **exact** match. These filters are associated with parts of a beacon advertisement that is fixed and unique to a beacon's identity. This filtering is done using [pandas.DataFrame.isin](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.isin.html) functionality. Available ID filters are
+   - ADDRESS - Advertiser's beacon hardware address
+   - UUID - Advertiser's [Universally Unique Identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID)
+   - MAJOR - Advertiser's [Major](https://developer.apple.com/ibeacon/Getting-Started-with-iBeacon.pdf) value
+   - MINOR - Advertiser's [Minor](https://developer.apple.com/ibeacon/Getting-Started-with-iBeacon.pdf) value
+   - TX POWER - Avertiser's stated Transmit (Tx) Power
+2. **Measurement filters**: Filter data based on **within-range** match. These filters are associated with measured values of the beacon advertisement that may vary and have no direct correlation with a beacon's identity. These are specified as 2-element list where the 1st element is the lower bound while the 2nd element is the upper bound. This filtering is done using [pandas.DataFrame.query](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html) functionality. Available measurement filters are
+   - TIMESTAMP - Time window specified by a beginning and end timestamp.
+   - RSSI - Range of Received Signal Strength Indicator (RSSI) values (dBm)
+
+Below is an example configuration of ADDRESS and RSSI filters. Note that the RSSI filter as an ID Filter value is a 2-element list.
+```yaml
+# Settings for beacon scanner
+scanner:
+  control_file: 'scanner_control' # Control file which stops beacon scanner before timeout
+  scan_prefix: 'pi_pact_scan' # Prefix to attach to scan output files
+  timeout: 20 # Scanning timeout (s)
+  revisit: 1 # Interval at which to scan (s)
+  filters: # Filters
+    ADDRESS: AA:BB:CC:DD:EE:FF
+    RSSI:
+      - -55
+      - 0
 ```
 
 ## Advertiser
@@ -228,6 +259,14 @@ The only explicit output of this code are the published log messages (console an
 - RSSI: The measured RSSI (dBm) of the received beacon advertisement.
 - DISTANCE: The pre-measured distance (m) between the devices.
 
+The following headers are only present if `--use_sense_hat` is set to True (enabled by default):
+- TEMPERATURE: The temperature (degrees Celsius) measured using the humidity sensor. 
+- HUMIDITY: The percentage of relative humidity measured using the humidity sensor.
+- PRESSURE: The pressure (millibars) measured using the pressure sensor.
+- PITCH: The angle (degrees) measured using the aircraft principal axis of pitch.
+- ROLL: The angle (degrees) measured using the aircraft principal axis of roll.
+- YAW: The angle (degrees) measured using the aircraft principal axis of yaw.
+
 # Repeated Execution
 The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. This script can take the argument `DISTANCE_INCREMENT` (default value of 0) to automatically adjust the pre-measured distance with each run, although users should make sure they move the pis to their correct positions in between runs. Passing the argument `WAIT_INTERVAL` (default value of 60) can give the user more time to reposition the pis in between runs.
    ```console
@@ -240,7 +279,7 @@ The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. T
                             [--control_file CONTROL_FILE]
                             [--scan_prefix SCAN_PREFIX] [--uuid UUID]
                             [--major MAJOR] [--minor MINOR] [--tx_power TX_POWER]
-                            [--interval INTERVAL] [--revist REVIST]
+                            [--interval INTERVAL] [--revist REVIST] [--use_sense_hat USE_SENSE_HAT]
 
    Script to run pi_pact.py repeatedly with variable distance and interval
    increments
@@ -274,4 +313,5 @@ The script `pi_pact_repeat.py` can be used to repeatedly execute `pi_pact.py`. T
      --tx_power TX_POWER   Beacon advertiser TX power.
      --interval INTERVAL   Beacon advertiser interval (ms).
      --revist REVIST       Beacon scanner revisit interval (s)
+     --use_sense_hat USE_SENSE_HAT Toggles use of sense hat.
 ```

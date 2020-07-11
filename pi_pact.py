@@ -15,8 +15,10 @@ from itertools import zip_longest
 import logging
 import logging.config
 import logging.handlers
+import os
 import pandas as pd
 from pathlib import Path
+from sense_hat import SenseHat
 import sys
 import time
 from typing import *
@@ -42,6 +44,7 @@ DEFAULT_CONFIG: dict = {
         'timeout': None,
         'revisit': 1,
         'distance': 0.2,
+        'use_sense_hat': True,
         'filters': {}
     },
     'logger': {
@@ -84,7 +87,8 @@ BLE_DEVICE = "hci0"
 CONTROL_INTERVAL = 1  # (s)
 MAX_TIMEOUT = 600  # (s)
 ID_FILTERS = ['ADDRESS', 'UUID', 'MAJOR', 'MINOR', 'TX POWER']
-MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI', 'DISTANCE']
+MEASUREMENT_FILTERS = ['TIMESTAMP', 'RSSI', 'DISTANCE', 'TEMPERATURE',
+                       'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW']
 
 # Limits
 MAJOR_LIMITS = [1, 65535]
@@ -485,6 +489,25 @@ class Scanner(object):
         self.__distance = value
 
     @property
+    def use_sense_hat(self) -> bool:
+        """Toggle sense hat getter."""
+        return self.__use_sense_hat
+
+    @use_sense_hat.setter
+    def use_sense_hat(self, value: bool):
+        """Toggle sense hat setter and instantiates a SenseHat object if true.
+
+        Raises:
+            TypeError: Toggle must be a bool.
+        """
+        if not isinstance(value, bool):
+            raise TypeError("Toggle must be a bool.")
+
+        self.__use_sense_hat = value
+        if self.__use_sense_hat:
+            self.__sense_hat = SenseHat()
+
+    @property
     def filters(self) -> dict:
         """BLE beacon scanner filters getter."""
         return self.__filters
@@ -519,7 +542,7 @@ class Scanner(object):
         for key, value in self.filters.items():
             # Filter based on fixed identifiers
             if key in ID_FILTERS:
-                advertisements = advertisements[advertisements[key].isin(value)]
+                advertisements = advertisements[advertisements[key].isin([value])]
             # Filter based on measurements
             else:
                 query_str = f"{value[0]} <= {key} and {key} <= {value[1]}"
@@ -547,15 +570,35 @@ class Scanner(object):
         """
         # Collect all advertisements
         advertisements = []
-        for (scan, timestamp) in zip_longest(scans, timestamps):
-            for address, payload in scan.items():
-                advertisement = {'ADDRESS': address, 'TIMESTAMP': timestamp, 'UUID': payload[0], 'MAJOR': payload[1],
-                                 'MINOR': payload[2], 'TX POWER': payload[3], 'RSSI': payload[4],
-                                 'DISTANCE': self.distance}
-                advertisements.append(advertisement)
-        # Format into DataFrame
-        return pd.DataFrame(advertisements, columns=['ADDRESS', 'TIMESTAMP',
-                                                     'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'RSSI', 'DISTANCE'])
+        if self.__use_sense_hat:
+            for (scan, timestamp) in zip_longest(scans, timestamps):
+                for address, payload in scan.items():
+                    advertisement = {'ADDRESS': address, 'TIMESTAMP': timestamp, 'UUID': payload[0],
+                                     'MAJOR': payload[1], 'MINOR': payload[2], 'TX POWER': payload[3],
+                                     'RSSI': payload[4], 'DISTANCE': self.distance,
+                                     'TEMPERATURE': self.__sense_hat.get_temperature(),
+                                     'HUMIDITY': self.__sense_hat.get_humidity(),
+                                     # 'INTERNAL TEMPERATURE': os.popen("vcgencmd measure_temp").readline(),
+                                     'PRESSURE': self.__sense_hat.get_pressure(),
+                                     'PITCH': self.__sense_hat.get_orientation()['pitch'],
+                                     'ROLL': self.__sense_hat.get_orientation()['roll'],
+                                     'YAW': self.__sense_hat.get_orientation()['yaw']}
+                    advertisements.append(advertisement)
+            # Format into DataFrame
+            return pd.DataFrame(advertisements, columns=['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR',
+                                                         'TX POWER', 'RSSI', 'DISTANCE', 'TEMPERATURE', 'HUMIDITY',
+                                                         'PRESSURE', 'PITCH', 'ROLL', 'YAW'])
+        else:
+            for (scan, timestamp) in zip_longest(scans, timestamps):
+                for address, payload in scan.items():
+                    advertisement = {'ADDRESS': address, 'TIMESTAMP': timestamp, 'UUID': payload[0],
+                                     'MAJOR': payload[1],
+                                     'MINOR': payload[2], 'TX POWER': payload[3], 'RSSI': payload[4],
+                                     'DISTANCE': self.distance}
+                    advertisements.append(advertisement)
+            # Format into DataFrame
+            return pd.DataFrame(advertisements, columns=['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR',
+                                                         'TX POWER', 'RSSI', 'DISTANCE'])
 
     def scan(self, scan_prefix='', timeout: int = 0, revisit: int = 1) -> pd.DataFrame:
         """Execute BLE beacon scan.
@@ -671,7 +714,9 @@ def load_config(parsed_args: Dict[str, str]) -> dict:
     if config['scanner']['filters'] is not None:
         filters_to_remove = []
         for key, value in config['scanner']['filters'].items():
-            if key not in ALLOWABLE_FILTERS or not isinstance(value, list):
+            if key not in ALLOWABLE_FILTERS:
+                filters_to_remove.append(key)
+            elif value is None:
                 filters_to_remove.append(key)
             elif key in MEASUREMENT_FILTERS and len(value) != 2:
                 filters_to_remove.append(key)
@@ -714,10 +759,12 @@ def parse_args(args: List[str]) -> Dict[str, str]:
                         help="Beacon advertiser TX power.")
     parser.add_argument('--interval', type=int,
                         help="Beacon advertiser interval (ms).")
-    parser.add_argument('--revist', type=int,
+    parser.add_argument('--revisit', type=int,
                         help="Beacon scanner revisit interval (s)")
     parser.add_argument('--distance', type=float,
                         help="Pre-measured distance between the devices (m).")
+    parser.add_argument('--use_sense_hat', type=bool,
+                        help="Toggles use of sense hat.")
     return vars(parser.parse_args(args))
 
 

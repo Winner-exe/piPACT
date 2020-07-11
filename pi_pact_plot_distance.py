@@ -3,7 +3,6 @@ from matplotlib import style
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from scipy.stats import gaussian_kde
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
                 'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW', 'SCAN']

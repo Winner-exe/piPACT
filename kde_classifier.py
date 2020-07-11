@@ -5,7 +5,8 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit,PyPep8Naming
 class KDEClassifier(BaseEstimator, ClassifierMixin):
-    """Bayesian generative classification based on KDE
+    """Bayesian generative classification based on KDE.
+
     Code used from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
 

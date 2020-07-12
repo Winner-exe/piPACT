@@ -2,18 +2,12 @@ from kde_classifier import KDEClassifier
 from sklearn.model_selection import GridSearchCV
 import pandas as pd
 from pathlib import Path
+from pi_pact_sort import categorize
 import numpy as np
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
-                'HUMIDITY', 'PRESSURE', 'PITCH', 'ROLL', 'YAW', 'SCAN']
-SAMPLE_SIZE = 10000
-
-
-def categorize(distance: float) -> int:
-    if distance < 2:
-        return 0
-    else:
-        return 1
+                'PRESSURE', 'PITCH', 'ROLL', 'YAW', 'SCAN']
+SAMPLE_SIZE = 30000
 
 
 def main():
@@ -24,7 +18,7 @@ def main():
     """
 
     # Initialize DataFrame
-    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
+    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE', 'HUMIDITY'])
     data_copy: pd.DataFrame = data.copy()
     csv_file: Path
     for csv_file in Path('.').glob('indoor-noObstruct-SenseHat*/*.csv'):
@@ -50,7 +44,7 @@ def main():
     # Hyperparameter tuning
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
-    bandwidths = 10 ** np.linspace(0, 2, 100)
+    bandwidths = np.linspace(1, 5, 5)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=1)
     grid.fit(X, y)
 

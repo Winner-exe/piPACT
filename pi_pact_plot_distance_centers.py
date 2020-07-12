@@ -17,7 +17,7 @@ def main():
     # Initialize DataFrame
     data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
     csv_file: Path
-    for csv_file in Path('.').glob('*/*.csv'):
+    for csv_file in Path('.').glob('indoor-noObstruct-SenseHat*/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)
         for column in DROP_COLUMNS:
             if column in datapart.columns:

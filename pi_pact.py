@@ -45,7 +45,7 @@ DEFAULT_CONFIG: dict = {
         'revisit': 1,
         'distance': 0.2,
         'use_sense_hat': True,
-        'filters': {}
+        'filters': {'ADDRESS': 'DC:A6:32:33:E9:E9', 'PRESSURE': [900, 1500]}
     },
     'logger': {
         'name': LOG_NAME,

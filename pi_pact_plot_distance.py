@@ -18,7 +18,7 @@ def main():
     data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
     data_copy: pd.DataFrame = data.copy()
     csv_file: Path
-    for csv_file in Path('.').glob('indoor-noObstruct-SenseHat*/*.csv'):
+    for csv_file in Path('.').glob('indoor*/*.csv'):
         datapart: pd.DataFrame = pd.read_csv(csv_file)
         for column in DROP_COLUMNS:
             if column in datapart.columns:
@@ -33,13 +33,15 @@ def main():
         datapart = data_copy[data_copy.DISTANCE == value]
         datapart = datapart.sample(SAMPLE_SIZE)
         data = data.append(datapart)
-    data_dict = {'DISTANCE0': data[data.DISTANCE == 0]['RSSI'].to_numpy(dtype=int),
-                 'DISTANCE1': data[data.DISTANCE == 1]['RSSI'].to_numpy(dtype=int)}
+    data_dict = {'H0': data[data.DISTANCE == 0]['RSSI'].to_numpy(dtype=int),
+                 'H1': data[data.DISTANCE == 1]['RSSI'].to_numpy(dtype=int)}
     data = pd.DataFrame.from_dict(data_dict)
 
     # Plot a histogram of RSSI vs. Distance
     style.use("ggplot")
-    data.plot.kde(legend=True, backend='matplotlib')
+    data.plot.kde(bw_method=1, legend=True, backend='matplotlib')
+    figure = plt.gcf()
+    figure.canvas.set_window_title("Binary Hypothesis KDE")
     plt.show()
 
 

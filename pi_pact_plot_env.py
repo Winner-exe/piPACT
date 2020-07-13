@@ -7,7 +7,7 @@ from pi_pact_sort import categorize
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER',
                 'DISTANCE', 'PITCH', 'ROLL', 'YAW', 'SCAN']
-INDEPEND: str = 'HUMIDITY'
+INDEPEND: str = 'PRESSURE'
 INDEPEND_UNITS: str = '%'
 DEPEND: str = 'RSSI'
 DEPEND_UNITS: str = 'dBm'

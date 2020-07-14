@@ -1,9 +1,9 @@
 from kde_classifier import KDEClassifier
-from sklearn.model_selection import GridSearchCV
 import pandas as pd
 from pathlib import Path
 from pi_pact_sort import categorize
 import numpy as np
+from sklearn.model_selection import GridSearchCV
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
                 'PITCH', 'ROLL', 'YAW', 'SCAN']
@@ -44,7 +44,7 @@ def main():
     # Hyperparameter tuning
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
-    bandwidths = np.linspace(0.02, 0.2, 10)
+    bandwidths = np.around(10 ** np.linspace(-2, 0, 100), decimals=4)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=1)
     grid.fit(X, y)
 

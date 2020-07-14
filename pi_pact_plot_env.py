@@ -3,7 +3,6 @@ from matplotlib import style
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from pi_pact_sort import categorize
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER',
                 'DISTANCE', 'PITCH', 'ROLL', 'YAW', 'SCAN']

@@ -11,7 +11,7 @@ SAMPLE_SIZE = 30000
 
 
 def main():
-    """Creates a Naive Bayes with KDE classifier to predict a distance range given RSSI values and other variables.
+    """Creates a Naive Bayes classifier with KDE to predict a distance range given RSSI values and other variables.
 
        KDEClassifier class used from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
        https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html

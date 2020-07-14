@@ -44,7 +44,7 @@ def main():
     # Hyperparameter tuning
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
-    bandwidths = np.around(10 ** np.linspace(-2, 0, 100), decimals=4)
+    bandwidths = np.around(np.linspace(0.5, 1, 5), decimals=4)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=1)
     grid.fit(X, y)
 

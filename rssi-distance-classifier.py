@@ -6,19 +6,19 @@ from pi_pact_sort import categorize
 import numpy as np
 
 DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
-                'PRESSURE', 'PITCH', 'ROLL', 'YAW', 'SCAN']
+                'PITCH', 'ROLL', 'YAW', 'SCAN']
 SAMPLE_SIZE = 30000
 
 
 def main():
     """Creates a Naive Bayes with KDE classifier to predict a distance range given RSSI values and other variables.
 
-       Classifier class used from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
+       KDEClassifier class used from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
        https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
     """
 
     # Initialize DataFrame
-    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE', 'HUMIDITY'])
+    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE', 'HUMIDITY', 'PRESSURE'])
     data_copy: pd.DataFrame = data.copy()
     csv_file: Path
     for csv_file in Path('.').glob('indoor-noObstruct-SenseHat*/*.csv'):
@@ -44,7 +44,7 @@ def main():
     # Hyperparameter tuning
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
-    bandwidths = np.linspace(1, 5, 5)
+    bandwidths = np.linspace(0.2, 1, 5)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=1)
     grid.fit(X, y)
 

@@ -12,7 +12,7 @@ DEPEND_UNITS: str = 'dBm'
 
 
 def main():
-    """Shows a plot depicting the measures of center for RSSI vs. Distance data."""
+    """Shows a plot depicting mode RSSI vs. Distance data."""
 
     # Initialize DataFrame
     data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
@@ -24,29 +24,17 @@ def main():
                 datapart = datapart.drop([column], 1)
         data = data.append(datapart)
         data.sort_values(by=['DISTANCE', 'RSSI'], inplace=True)
-    means: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
-    medians: pd.DataFrame = means.copy()
-    modes: pd.DataFrame = means.copy()
+    modes: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE'])
 
-    # Take the mean, median, and mode RSSI value from each pre-measured distance
+    # Take the mode RSSI value from each pre-measured distance
     for distance in data[INDEPEND].unique():
-        datapart: pd.Series = data[data.DISTANCE == distance]
-        datapart = datapart.agg(func='mean')
-        means = means.append([datapart])
-
-        datapart: pd.Series = data[data.DISTANCE == distance]
-        datapart = datapart.agg(func='median')
-        medians = medians.append([datapart])
-
         datapart: pd.Series = data[data.DISTANCE == distance]
         datapart = datapart.agg(func='mode')
         modes = modes.append([datapart])
 
-    # Plot mean, median, and mode RSSI vs. Distance
+    # Plot mode RSSI vs. Distance
     style.use("ggplot")
     fig, axs = plt.subplots()
-    axs.plot(means[INDEPEND], means[DEPEND], marker='o', label='mean')
-    axs.plot(medians[INDEPEND], medians[DEPEND], marker='s', label='median')
     axs.plot(modes[INDEPEND], modes[DEPEND], marker='>', label='mode')
     axs.legend(loc='upper right')
     axs.set_xlabel(f'{INDEPEND} ({INDEPEND_UNITS})')
@@ -54,7 +42,7 @@ def main():
     axs.set_title(f'{INDEPEND} ({INDEPEND_UNITS}) vs. {DEPEND} ({DEPEND_UNITS})')
 
     figure = plt.gcf()
-    figure.canvas.set_window_title('RSSI-Distance Centers')
+    figure.canvas.set_window_title('RSSI-Distance Modes')
 
     plt.show()
 

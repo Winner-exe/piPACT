@@ -33,8 +33,8 @@ def main():
         datapart = data_copy[data_copy.DISTANCE == value]
         datapart = datapart.sample(SAMPLE_SIZE)
         data = data.append(datapart)
-    data_dict = {'H0': data[data.DISTANCE == 0]['RSSI'].to_numpy(dtype=int),
-                 'H1': data[data.DISTANCE == 1]['RSSI'].to_numpy(dtype=int)}
+    data_dict = {'H1': data[data.DISTANCE == 1]['RSSI'].to_numpy(dtype=int),
+                 'H0': data[data.DISTANCE == 0]['RSSI'].to_numpy(dtype=int)}
     data = pd.DataFrame.from_dict(data_dict)
 
     # Plot a histogram of RSSI vs. Distance

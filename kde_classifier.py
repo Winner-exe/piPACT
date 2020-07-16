@@ -1,33 +1,34 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.neighbors import KernelDensity
+from typing import *
 
 
 # noinspection PyAttributeOutsideInit,PyPep8Naming
 class KDEClassifier(BaseEstimator, ClassifierMixin):
     """Bayesian generative classification based on KDE.
 
-    Code used from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
+    Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
 
     Parameters
     ----------
-    bandwidth : float
-        the kernel bandwidth within each class
+    bandwidths : Sequence[float]
+        the list of kernel bandwidths within each class
     kernel : str
         the kernel name, passed to KernelDensity
     """
 
-    def __init__(self, bandwidth=1.0, kernel='gaussian'):
-        self.bandwidth = bandwidth
-        self.kernel = kernel
+    def __init__(self, bandwidths=(1.0,), kernel='gaussian'):
+        self.bandwidths: Sequence[float] = bandwidths
+        self.kernel: str = kernel
 
     def fit(self, X, y):
         self.classes_ = np.sort(np.unique(y))
         training_sets = [X[y == yi] for yi in self.classes_]
-        self.models_ = [KernelDensity(bandwidth=self.bandwidth,
-                                      kernel=self.kernel).fit(Xi)
-                        for Xi in training_sets]
+        self.models_ = [KernelDensity(bandwidth=self.bandwidths[i % len(self.bandwidths)],
+                                      kernel=self.kernel).fit(training_sets[i])
+                        for i in range(len(training_sets))]
         self.logpriors_ = [np.log(Xi.shape[0] / X.shape[0])
                            for Xi in training_sets]
         return self

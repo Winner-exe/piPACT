@@ -13,14 +13,21 @@ class KDEClassifier(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    bandwidths : Sequence[float]
-        the list of kernel bandwidths within each class
+    bandwidth1 : float
+        the kernel bandwidth within class 1
+    bandwidth2 : float
+        the kernel bandwidth within class 2
+    bandwidth3 : float
+        the kernel bandwidth within class 3
     kernel : str
         the kernel name, passed to KernelDensity
     """
 
-    def __init__(self, bandwidths=(1.0,), kernel='gaussian'):
-        self.bandwidths: Sequence[float] = bandwidths
+    def __init__(self, bandwidth1=1.0, bandwidth2=1.0, bandwidth3=1.0, kernel='gaussian'):
+        self.bandwidth1: float = bandwidth1
+        self.bandwidth2: float = bandwidth2
+        self.bandwidth3: float = bandwidth3
+        self.bandwidths: Sequence[float] = [self.bandwidth1, self.bandwidth2, self.bandwidth3]
         self.kernel: str = kernel
 
     def fit(self, X, y):

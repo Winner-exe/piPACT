@@ -46,13 +46,13 @@ def main():
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
     bandwidths = np.around(np.linspace(0.5, 1, 5), decimals=4)
-    grid = GridSearchCV(KDEClassifier(), {'bandwidths': bandwidths}, n_jobs=2)
+    grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=2)
     grid.fit(X, y)
 
     print(grid.best_params_)
     print('accuracy =', grid.best_score_)
 
-    with("nb-kde-models/4var-b3-nb-kde-model.pickle", "wb") as f:
+    with open("nb-kde-models/4var-b3-nb-kde-model.pickle", "wb") as f:
         pickle.dump(grid.best_estimator_, f)
 
 

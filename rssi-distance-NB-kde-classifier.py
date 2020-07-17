@@ -2,6 +2,7 @@ from kde_classifier import KDEClassifier
 import pandas as pd
 from pathlib import Path
 from pi_pact_sort import categorize
+import pickle
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 
@@ -51,6 +52,9 @@ def main():
 
     print(grid.best_params_)
     print('accuracy =', grid.best_score_)
+
+    with("nb-kde-models/4var-b3-nb-kde-model.pickle", "wb") as f:
+        pickle.dump(grid.best_estimator_, f)
 
 
 if __name__ == "__main__":

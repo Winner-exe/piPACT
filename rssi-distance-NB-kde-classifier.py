@@ -46,8 +46,7 @@ def main():
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
     bandwidths = np.around(np.linspace(0.5, 1, 5), decimals=4)
-    grid = GridSearchCV(KDEClassifier(), {'bandwidth1': bandwidths, 'bandwidth2': bandwidths,
-                                          'bandwidth3': bandwidths}, n_jobs=2)
+    grid = GridSearchCV(KDEClassifier(), {'bandwidths': bandwidths}, n_jobs=2)
     grid.fit(X, y)
 
     print(grid.best_params_)

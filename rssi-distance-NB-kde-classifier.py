@@ -6,9 +6,10 @@ import pickle
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 
-DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE',
+DROP_COLUMNS = ['ADDRESS', 'TIMESTAMP', 'UUID', 'MAJOR', 'MINOR', 'TX POWER', 'TEMPERATURE', 'PRESSURE'
                 'PITCH', 'ROLL', 'YAW', 'SCAN']
 SAMPLE_SIZE = 30000
+np.random.seed(0)
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     """
 
     # Initialize DataFrame
-    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE', 'HUMIDITY', 'PRESSURE'])
+    data: pd.DataFrame = pd.DataFrame(columns=['RSSI', 'DISTANCE', 'HUMIDITY'])
     data_copy: pd.DataFrame = data.copy()
     csv_file: Path
     for csv_file in Path('.').glob('indoor-noObstruct-SenseHat*/*.csv'):
@@ -46,13 +47,13 @@ def main():
     # Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
     bandwidths = np.around(np.linspace(0.5, 1, 5), decimals=4)
-    grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=2)
+    grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths}, n_jobs=1)
     grid.fit(X, y)
 
     print(grid.best_params_)
     print('accuracy =', grid.best_score_)
 
-    with open("nb-kde-models/4var-b3-nb-kde-model.pickle", "wb") as f:
+    with open("nb-kde-models/3varH-b3-nb-kde-model.pickle", "wb") as f:
         pickle.dump(grid.best_estimator_, f)
 
 

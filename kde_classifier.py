@@ -11,12 +11,11 @@ class KDEClassifier(BaseEstimator, ClassifierMixin):
     Code adapted from Chapter 5 of the Python Data Science Handbook by Jake VanderPlas:
     https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
 
-    Parameters
-    ----------
-    bandwidth : float
-        the kernel bandwidth within each class
-    kernel : str
-        the kernel name, passed to KernelDensity
+    Args:
+        bandwidth : float
+            the kernel bandwidth within each class
+        kernel : str
+            the kernel name, passed to KernelDensity
     """
 
     def __init__(self, bandwidth=1.0, kernel='gaussian'):

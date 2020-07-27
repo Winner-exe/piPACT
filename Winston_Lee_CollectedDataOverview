@@ -1,0 +1,17 @@
+The data for this study is split into 3 folders. All data files are in .csv format, and each folder has a "data-info.txt"
+file to explicitly state the variables and controls. The naming convention for each data file is as follows:
+
+"<'indoor' or 'icePack'>_<Distance>_noObstruct_<'SenseHat', if applicable>_scan_<Date>T<Time>.csv"
+
+The first is "icePack-noObstruct-rssi-env-data", which contains a small amount of data where the Raspberry Pis collected
+bluetooth data with an ice pack nearby to reduce temperature. Raspberry Pi Sense HATS were equipped so the scan data
+could include environmental data. This data was not analyzed in the final study.
+
+The second is "indoor-noObstruct-rssi-distance-data", which contains data where the Raspberry Pis were seperated by some
+pre-measured distance and began advertising/scanning. These data files do not have any environmental data since the Sense
+HATs were not available at the time of this data collection, so as a result this data was not analyzed in the final study.
+
+The final folder is "indoor-noObstruct-SenseHat-rssi-distance-data", which contains data similar to
+"indoor-noObstruct-rssi-distance-data", except that Raspberry Pi Sense HATs were equipped with Sense HATs. This data accounts
+for environmental data (including humidity and air pressure); consequently, the machine learning models were trained on this data
+and this data alone.

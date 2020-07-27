@@ -1,0 +1,15 @@
+Variables:
+  - RSSI (dBm)
+  - Distance (m)
+  - Temperature (degrees C)
+  - Humidity (%)
+  - Pressure (millibars)
+  - Pitch (degrees)
+  - Roll (degrees)
+  - Yaw (degrees)
+
+Constants:
+  - Devices: 2 x Raspberry Pi 4 Model B 2GB RAM, Raspberry Pi SENSE HAT equipped
+  - Environment: indoors, ice pack nearby
+  - Obstructions: none
+  - TX Power: 1
